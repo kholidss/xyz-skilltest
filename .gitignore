@@ -1,0 +1,10 @@
+xyz-skilltest
+/bin
+.bin
+.env
+.idea
+.DS_Store
+/vendor
+go.sum
+.vscode
+/docs
