@@ -53,7 +53,7 @@ func (rtr *router) Route() {
 	repoLimit := repositories.NewLimitRepository(db)
 
 	//define middleware
-	//basicMiddleware := middleware.NewAuthMiddleware()
+	middlewareUserAuth := middleware.NewUserAuthMiddleware(rtr.cfg, repoUser)
 
 	//define storage
 	//fs := bootstrap.RegistryGCS(rtr.cfg.GCSConfig.ServiceAccountPath)
@@ -89,6 +89,7 @@ func (rtr *router) Route() {
 	pathAuthV1.Post("/register-user", rtr.handle(
 		handler.HttpRequest,
 		ctrlRegisterUser,
+		middlewareUserAuth.Authenticate,
 	))
 	pathAuthV1.Post("/login-user", rtr.handle(
 		handler.HttpRequest,

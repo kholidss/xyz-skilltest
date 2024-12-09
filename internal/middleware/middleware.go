@@ -6,14 +6,14 @@ import (
 	"github.com/kholidss/xyz-skilltest/pkg/config"
 )
 
-type MiddlewareFunc func(xCtx *fiber.Ctx, conf *config.Config) appctx.Response
+type MiddlewareFunc func(xCtx *fiber.Ctx) appctx.Response
 
 // FilterFunc is a iterator resolver in each middleware registered
 func FilterFunc(conf *config.Config, xCtx *fiber.Ctx, mfs []MiddlewareFunc) appctx.Response {
 	// Initiate postive case
 	var response = appctx.Response{Code: fiber.StatusOK}
 	for _, mf := range mfs {
-		if response = mf(xCtx, conf); response.Code != fiber.StatusOK {
+		if response = mf(xCtx); response.Code != fiber.StatusOK {
 			return response
 		}
 	}

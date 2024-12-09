@@ -4,12 +4,21 @@ import (
 	"context"
 	"github.com/gofiber/fiber/v2"
 	"github.com/kholidss/xyz-skilltest/internal/consts"
+	"github.com/kholidss/xyz-skilltest/internal/presentation"
 )
 
 func GetRequestIDFromFiberCtx(fCtx *fiber.Ctx) string {
 	val, ok := fCtx.Locals("request-id").(string)
 	if !ok {
 		return ""
+	}
+	return val
+}
+
+func GetUserAuthDataFromFiberCtx(fCtx *fiber.Ctx) presentation.UserAuthData {
+	val, ok := fCtx.Locals(consts.CtxKeyUserAuthData).(presentation.UserAuthData)
+	if !ok {
+		return presentation.UserAuthData{}
 	}
 	return val
 }
