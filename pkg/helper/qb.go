@@ -66,17 +66,17 @@ func StructQueryWhereMysql(i interface{}, hideDeleted bool, tag string) (q strin
 	}
 
 	if len(cols) > 0 && hideDeleted {
-		q = fmt.Sprintf(`WHERE %s AND deleted_at = '0000-00-00 00:00:00'`, util.StringJoin(cols, "=? AND ", "=?"))
+		q = fmt.Sprintf(`WHERE %s AND is_deleted = false`, util.StringJoin(cols, "=? AND ", "=?"))
 	}
 
 	if len(cols) < 1 && hideDeleted {
-		q = fmt.Sprint(`WHERE deleted_at = '0000-00-00 00:00:00'`)
+		q = fmt.Sprint(`WHERE is_deleted = false`)
 	}
 
 	if startDate != "" && endDate != "" {
 		q = fmt.Sprintf(`%s AND ( DATE(created_at) >= ?  AND DATE(created_at) <= ? )`, q)
 		if hideDeleted {
-			q = fmt.Sprintf(`%s AND ( DATE(created_at) >= ?  AND DATE(created_at) <= ? ) AND deleted_at = '0000-00-00 00:00:00'`, q)
+			q = fmt.Sprintf(`%s AND ( DATE(created_at) >= ?  AND DATE(created_at) <= ? ) AND is_deleted = false`, q)
 		}
 
 		if len(cols) == 0 && !hideDeleted {
@@ -84,7 +84,7 @@ func StructQueryWhereMysql(i interface{}, hideDeleted bool, tag string) (q strin
 		}
 
 		if len(cols) == 0 && hideDeleted {
-			q = fmt.Sprint(`WHERE ( DATE(created_at) >= ?  AND DATE(created_at) <= ? ) AND deleted_at = '0000-00-00 00:00:00'`)
+			q = fmt.Sprint(`WHERE ( DATE(created_at) >= ?  AND DATE(created_at) <= ? ) AND is_deleted = false`)
 		}
 
 		vals = append(vals, startDate, endDate)

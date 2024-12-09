@@ -4,6 +4,7 @@ package appctx
 import (
 	"encoding/json"
 	"github.com/gofiber/fiber/v2"
+	"github.com/kholidss/xyz-skilltest/internal/consts"
 	"sync"
 	"time"
 
@@ -22,7 +23,7 @@ type ErrorResp struct {
 
 // Response presentation contract object
 type Response struct {
-	Code      int         `json:"-"`
+	Code      int         `json:"code,omitempty"`
 	Status    bool        `json:"status"`
 	Timestamp time.Time   `json:"timestamp,omitempty"`
 	Entity    string      `json:"entity,omitempty"`
@@ -51,6 +52,11 @@ func (r *Response) WithCode(c int) *Response {
 	if c > fiber.StatusCreated {
 		r.Status = false
 	}
+
+	if c >= fiber.StatusInternalServerError {
+		r.Message = consts.MsgAPIInternalServerError
+	}
+	
 	r.Code = c
 	return r
 }

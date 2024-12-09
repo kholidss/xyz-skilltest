@@ -59,8 +59,8 @@ func InitializeApp(cfg *config.Config) {
 			}, ","),
 		}),
 		requestid.New(requestid.Config{
-			ContextKey: "refid",
-			Header:     "X-Reference-Id",
+			ContextKey: "request-id",
+			Header:     "X-Request-ID",
 			Generator: func() string {
 				return uuid.New().String()
 			},

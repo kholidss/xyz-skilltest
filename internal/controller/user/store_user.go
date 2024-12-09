@@ -3,12 +3,12 @@ package user
 import (
 	"github.com/kholidss/xyz-skilltest/internal/appctx"
 	"github.com/kholidss/xyz-skilltest/internal/controller/contract"
-	"github.com/kholidss/xyz-skilltest/internal/service"
+	"github.com/kholidss/xyz-skilltest/internal/service/authentication"
 	"github.com/kholidss/xyz-skilltest/pkg/tracer"
 )
 
 type storeUser struct {
-	service service.UserService
+	service authentication.UserService
 }
 
 func (g *storeUser) Serve(xCtx appctx.Data) appctx.Response {
@@ -19,6 +19,6 @@ func (g *storeUser) Serve(xCtx appctx.Data) appctx.Response {
 	return res
 }
 
-func NewStoreUser(svc service.UserService) contract.Controller {
+func NewStoreUser(svc authentication.UserService) contract.Controller {
 	return &storeUser{service: svc}
 }

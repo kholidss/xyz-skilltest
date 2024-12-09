@@ -141,6 +141,7 @@ func (c *Config) Connect(cfg *config.Config, opts ...DBConfigOption) (*sqlx.DB, 
 	mysqlCfg.User = c.User
 	mysqlCfg.Passwd = c.Password
 	mysqlCfg.DBName = c.Name
+	mysqlCfg.ParseTime = true
 
 	if c.TLS {
 		tlsConfig, err := c.setTLS(cfg.AppEnv)

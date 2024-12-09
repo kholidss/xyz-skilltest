@@ -4,11 +4,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/kholidss/xyz-skilltest/internal/appctx"
 	"github.com/kholidss/xyz-skilltest/internal/controller/contract"
-	"github.com/kholidss/xyz-skilltest/internal/service"
+	"github.com/kholidss/xyz-skilltest/internal/service/authentication"
 )
 
 type getAllUser struct {
-	service service.UserService
+	service authentication.UserService
 }
 
 func (g *getAllUser) Serve(xCtx appctx.Data) appctx.Response {
@@ -26,6 +26,6 @@ func (g *getAllUser) Serve(xCtx appctx.Data) appctx.Response {
 	return *appctx.NewResponse().WithCode(fiber.StatusOK).WithMessage("Success").WithData(users)
 }
 
-func NewGetAllUser(svc service.UserService) contract.Controller {
+func NewGetAllUser(svc authentication.UserService) contract.Controller {
 	return &getAllUser{service: svc}
 }

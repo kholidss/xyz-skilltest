@@ -14,7 +14,7 @@ func (g *getHealth) Serve(xCtx appctx.Data) appctx.Response {
 	return *appctx.NewResponse().WithCode(fiber.StatusOK).WithMessage("ok").WithData(struct {
 		Message string `json:"message"`
 	}{
-		Message: "Waras!",
+		Message: "OK!",
 	})
 }
 

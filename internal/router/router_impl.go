@@ -3,12 +3,14 @@ package router
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/kholidss/xyz-skilltest/internal/appctx"
+	"github.com/kholidss/xyz-skilltest/internal/bootstrap"
 	"github.com/kholidss/xyz-skilltest/internal/controller"
 	"github.com/kholidss/xyz-skilltest/internal/controller/contract"
-	"github.com/kholidss/xyz-skilltest/internal/controller/todo"
+	modulAuthentication "github.com/kholidss/xyz-skilltest/internal/controller/v1/authentication"
 	"github.com/kholidss/xyz-skilltest/internal/handler"
 	"github.com/kholidss/xyz-skilltest/internal/middleware"
-	"github.com/kholidss/xyz-skilltest/internal/provider"
+	"github.com/kholidss/xyz-skilltest/internal/repositories"
+	"github.com/kholidss/xyz-skilltest/internal/service/authentication"
 	"github.com/kholidss/xyz-skilltest/pkg/config"
 )
 
@@ -43,19 +45,15 @@ func (rtr *router) response(fiberCtx *fiber.Ctx, resp appctx.Response) error {
 
 func (rtr *router) Route() {
 	//init db
-	//db := bootstrap.RegistryMySQLDatabase(rtr.cfg)
+	db := bootstrap.RegistryMySQLDatabase(rtr.cfg)
 
 	//define repositories
-	//userRepo := repositories.NewUserRepositoryImpl(db)
-
-	//define services
-	//userSvc := service.NewUserServiceImpl(userRepo)
+	repoUser := repositories.NewUserRepository(db)
+	repoBucket := repositories.NewBucketRepository(db)
+	repoLimit := repositories.NewLimitRepository(db)
 
 	//define middleware
 	//basicMiddleware := middleware.NewAuthMiddleware()
-
-	//define provider
-	example := provider.NewExampleProvider(rtr.cfg)
 
 	//define storage
 	//fs := bootstrap.RegistryGCS(rtr.cfg.GCSConfig.ServiceAccountPath)
@@ -63,38 +61,33 @@ func (rtr *router) Route() {
 	//fs := bootstrap.RegistryMinio(rtr.cfg)
 
 	//define cdn
-	//cdnStorage := bootstrap.RegistryCDN(rtr.cfg)
+	cdnStorage := bootstrap.RegistryCDN(rtr.cfg)
+
+	//define services
+	svcAuthentication := authentication.NewSvcAuthentication(
+		rtr.cfg,
+		repoUser,
+		repoBucket,
+		repoLimit,
+		cdnStorage,
+	)
 
 	//define controller
-	//getAllUser := user.NewGetAllUser(userSvc)
-	//storeUser := user.NewStoreUser(userSvc)
-	getTodos := todo.NewGetTodo(example)
+	ctrlRegisterUser := modulAuthentication.NewRegisterUser(svcAuthentication)
 
 	health := controller.NewGetHealth()
-	internalV1 := rtr.fiber.Group("/api/internal/v1")
+	externalV1 := rtr.fiber.Group("/api/external/v1")
+
+	pathAuthV1 := externalV1.Group("/auth")
 
 	rtr.fiber.Get("/ping", rtr.handle(
 		handler.HttpRequest,
 		health,
 	))
 
-	//internalV1.Get("/users", rtr.handle(
-	//	handler.HttpRequest,
-	//	getAllUser,
-	//	//middleware
-	//	basicMiddleware.Authenticate,
-	//))
-
-	//internalV1.Post("/users", rtr.handle(
-	//	handler.HttpRequest,
-	//	storeUser,
-	//	//middleware
-	//	// basicMiddleware.Authenticate,
-	//))
-
-	internalV1.Get("/todos", rtr.handle(
+	pathAuthV1.Post("/register-user", rtr.handle(
 		handler.HttpRequest,
-		getTodos,
+		ctrlRegisterUser,
 		//middleware
 		// basicMiddleware.Authenticate,
 	))
