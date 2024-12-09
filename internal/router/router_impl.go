@@ -3,16 +3,12 @@ package router
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/kholidss/xyz-skilltest/internal/appctx"
-	"github.com/kholidss/xyz-skilltest/internal/bootstrap"
 	"github.com/kholidss/xyz-skilltest/internal/controller"
 	"github.com/kholidss/xyz-skilltest/internal/controller/contract"
 	"github.com/kholidss/xyz-skilltest/internal/controller/todo"
-	"github.com/kholidss/xyz-skilltest/internal/controller/user"
 	"github.com/kholidss/xyz-skilltest/internal/handler"
 	"github.com/kholidss/xyz-skilltest/internal/middleware"
 	"github.com/kholidss/xyz-skilltest/internal/provider"
-	"github.com/kholidss/xyz-skilltest/internal/repositories"
-	"github.com/kholidss/xyz-skilltest/internal/service"
 	"github.com/kholidss/xyz-skilltest/pkg/config"
 )
 
@@ -47,16 +43,16 @@ func (rtr *router) response(fiberCtx *fiber.Ctx, resp appctx.Response) error {
 
 func (rtr *router) Route() {
 	//init db
-	db := bootstrap.RegistryMySQLDatabase(rtr.cfg)
+	//db := bootstrap.RegistryMySQLDatabase(rtr.cfg)
 
 	//define repositories
-	userRepo := repositories.NewUserRepositoryImpl(db)
+	//userRepo := repositories.NewUserRepositoryImpl(db)
 
 	//define services
-	userSvc := service.NewUserServiceImpl(userRepo)
+	//userSvc := service.NewUserServiceImpl(userRepo)
 
 	//define middleware
-	basicMiddleware := middleware.NewAuthMiddleware()
+	//basicMiddleware := middleware.NewAuthMiddleware()
 
 	//define provider
 	example := provider.NewExampleProvider(rtr.cfg)
@@ -70,8 +66,8 @@ func (rtr *router) Route() {
 	//cdnStorage := bootstrap.RegistryCDN(rtr.cfg)
 
 	//define controller
-	getAllUser := user.NewGetAllUser(userSvc)
-	storeUser := user.NewStoreUser(userSvc)
+	//getAllUser := user.NewGetAllUser(userSvc)
+	//storeUser := user.NewStoreUser(userSvc)
 	getTodos := todo.NewGetTodo(example)
 
 	health := controller.NewGetHealth()
@@ -82,19 +78,19 @@ func (rtr *router) Route() {
 		health,
 	))
 
-	internalV1.Get("/users", rtr.handle(
-		handler.HttpRequest,
-		getAllUser,
-		//middleware
-		basicMiddleware.Authenticate,
-	))
+	//internalV1.Get("/users", rtr.handle(
+	//	handler.HttpRequest,
+	//	getAllUser,
+	//	//middleware
+	//	basicMiddleware.Authenticate,
+	//))
 
-	internalV1.Post("/users", rtr.handle(
-		handler.HttpRequest,
-		storeUser,
-		//middleware
-		// basicMiddleware.Authenticate,
-	))
+	//internalV1.Post("/users", rtr.handle(
+	//	handler.HttpRequest,
+	//	storeUser,
+	//	//middleware
+	//	// basicMiddleware.Authenticate,
+	//))
 
 	internalV1.Get("/todos", rtr.handle(
 		handler.HttpRequest,

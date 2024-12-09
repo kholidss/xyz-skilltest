@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cast"
 )
 
-func StructQueryWhere(i interface{}, hideDeleted bool, tag string) (q string, vals []interface{}, limit, page uint64, err error) {
+func StructQueryWhereMysql(i interface{}, hideDeleted bool, tag string) (q string, vals []interface{}, limit, page uint64, err error) {
 
 	var cols []string
 	var startDate, endDate, sortOrder, groupBy string
@@ -101,7 +101,7 @@ func StructQueryWhere(i interface{}, hideDeleted bool, tag string) (q string, va
 	return q, vals, limit, page, err
 }
 
-func StructQueryInsert(param interface{}, tableName, tag string, returningID bool) (string, []interface{}, error) {
+func StructQueryInsertMysql(param interface{}, tableName, tag string, returningID bool) (string, []interface{}, error) {
 	var (
 		keys   []string
 		values []interface{}
@@ -119,9 +119,17 @@ func StructQueryInsert(param interface{}, tableName, tag string, returningID boo
 		numArr = append(numArr, "?")
 	}
 
-	q := ""
-	if returningID {
-		q = fmt.Sprintf(`
+	var (
+		q         string
+		returnIDQ = func() string {
+			if returningID {
+				return "RETURNING id"
+			}
+			return ""
+		}()
+	)
+
+	q = fmt.Sprintf(`
 		INSERT INTO
 			%s
 		(
@@ -131,26 +139,13 @@ func StructQueryInsert(param interface{}, tableName, tag string, returningID boo
 		(
 			%s
 		)
-		RETURNING id;
-	`, tableName, strings.Join(keys, ","), strings.Join(numArr, ","))
-	} else {
-		q = fmt.Sprintf(`
-		INSERT INTO
-			%s
-		(
-			%s
-		)
-		VALUES
-		(
-			%s
-		);
-	`, tableName, strings.Join(keys, ","), strings.Join(numArr, ","))
-	}
+		%s;
+	`, tableName, strings.Join(keys, ","), strings.Join(numArr, ","), returnIDQ)
 
 	return q, values, nil
 }
 
-func StructToQueryUpdate(input interface{}, where interface{}, tableName, tag string) (string, []interface{}, error) {
+func StructToQueryUpdateMysql(input interface{}, where interface{}, tableName, tag string) (string, []interface{}, error) {
 
 	cols, vals, err := util.ToColumnsValues(input, tag)
 	if err != nil {
@@ -172,11 +167,8 @@ func StructToQueryUpdate(input interface{}, where interface{}, tableName, tag st
 }
 
 func SelectCustom(selectColumn []string) string {
-	var selectQ string
 	if len(selectColumn) > 0 {
-		selectQ = strings.Join(selectColumn, ",")
-	} else {
-		selectQ = "*"
+		return strings.Join(selectColumn, ",")
 	}
-	return selectQ
+	return "*"
 }
