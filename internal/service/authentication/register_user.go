@@ -27,7 +27,7 @@ import (
 func (a authenticationService) RegisterUser(ctx context.Context, payload presentation.ReqRegisterUser) appctx.Response {
 	var (
 		lf = logger.NewFields(
-			logger.EventName("AuthV1RegisterUser"),
+			logger.EventName("ServiceAuthRegisterUser"),
 			logger.Any("X-Request-ID", helper.GetRequestIDFromCtx(ctx)),
 		)
 	)

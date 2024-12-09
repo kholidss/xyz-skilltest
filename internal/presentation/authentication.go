@@ -20,3 +20,17 @@ type (
 		DOB       string `json:"date_of_birth"`
 	}
 )
+
+type (
+	ReqLoginUser struct {
+		NIK      string `json:"nik"`
+		Password string `json:"password"`
+	}
+
+	RespLoginUser struct {
+		UserID      string `json:"user_id"`
+		AccessToken string `json:"access_token"`
+		FullName    string `json:"full_name"`
+		LegalName   string `json:"legal_name"`
+	}
+)
