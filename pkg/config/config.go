@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/fsnotify/fsnotify"
 	"github.com/gofiber/fiber/v2"
+	"github.com/kholidss/xyz-skilltest/internal/consts"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"net/http"
@@ -41,6 +42,7 @@ func (cnf *Config) FiberConfig() fiber.Config {
 	// Return Fiber configuration.
 	return fiber.Config{
 		AppName:       cnf.AppName,
+		BodyLimit:     consts.FiberMaxBodyLimit,
 		StrictRouting: false,
 		CaseSensitive: false,
 		ErrorHandler: func(c *fiber.Ctx, err error) error {

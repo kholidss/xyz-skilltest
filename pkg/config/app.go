@@ -12,5 +12,10 @@ type AppConfig struct {
 	AppOtelTrace    bool   `mapstructure:"app_otel_trace"`
 	AppOtelExporter string `mapstructure:"app_otel_exporter"`
 
+	AppPasswordSecret         string `mapstructure:"app_password_secret"`
+	APPPrivateKey             string `mapstructure:"app_private_key"`
+	APPPublicKey              string `mapstructure:"app_public_key"`
+	APPTokenUserExpiredInHour int    `mapstructure:"app_token_user_expired_in_hour"`
+
 	DistributeTraceConfig `mapstructure:",squash"`
 }
