@@ -1,4 +1,4 @@
-# Gofiber Boilerplate - By Kholidss
+# XYZ Skilltest - By Kholidss
 
 ## Getting started
 
