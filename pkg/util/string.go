@@ -1,7 +1,9 @@
 package util
 
 import (
+	"crypto/rand"
 	"fmt"
+	"math/big"
 	"strconv"
 	"strings"
 )
@@ -80,4 +82,18 @@ func SubstringAfter(src string, prefix string) string {
 		return src
 	}
 	return src[adjustedPos:]
+}
+
+// GenerateRandomString generates a random alphanumeric string of the specified length
+func GenerateRandomString(length int) string {
+	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+	var result = make([]byte, length)
+	for i := range result {
+		randomByte, err := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
+		if err != nil {
+			return ""
+		}
+		result[i] = charset[randomByte.Int64()]
+	}
+	return string(result)
 }

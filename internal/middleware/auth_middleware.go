@@ -93,7 +93,7 @@ func (u *userAuth) Authenticate(xCtx *fiber.Ctx) appctx.Response {
 
 	//Inject user auth data to fiber context
 	xCtx.Locals(consts.CtxKeyUserAuthData, presentation.UserAuthData{
-		UserID:      cast.ToString(userClaim["user_ids"]),
+		UserID:      cast.ToString(userClaim["user_id"]),
 		AccessToken: token,
 		FullName:    user.FullName,
 		LegalName:   user.LegalName,
