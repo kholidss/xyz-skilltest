@@ -69,3 +69,14 @@ to show all migration command
 ```bash
 make migration
 ```
+
+## Test
+run unit test
+```bash
+make test
+```
+
+run unit test with coverage
+```bash
+make test-cover
+```

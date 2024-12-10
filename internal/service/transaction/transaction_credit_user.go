@@ -190,7 +190,10 @@ func (t *transactionService) CreditUserProcess(ctx context.Context, authData pre
 	}
 
 	//Commit the db transaction
-	_ = tx.Commit()
+	if tx != nil {
+		_ = tx.Commit()
+
+	}
 
 	logger.InfoWithContext(ctx, "success transaction credit user", lf...)
 	return *appctx.NewResponse().

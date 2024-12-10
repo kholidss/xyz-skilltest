@@ -37,7 +37,6 @@ func (c *creditUser) Serve(xCtx appctx.Data) appctx.Response {
 		payload presentation.ReqTransactionCreditUser
 	)
 
-	fmt.Println("authinfo", authInfo)
 	ctx, span := tracer.NewSpan(xCtx.FiberCtx.Context(), "controller.transaction.credit_user_v1", nil)
 	defer span.End()
 
