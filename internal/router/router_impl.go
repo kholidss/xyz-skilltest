@@ -7,11 +7,14 @@ import (
 	"github.com/kholidss/xyz-skilltest/internal/controller"
 	"github.com/kholidss/xyz-skilltest/internal/controller/contract"
 	modulAuthentication "github.com/kholidss/xyz-skilltest/internal/controller/v1/authentication"
+	modultransaction "github.com/kholidss/xyz-skilltest/internal/controller/v1/transaction"
 	"github.com/kholidss/xyz-skilltest/internal/handler"
 	"github.com/kholidss/xyz-skilltest/internal/middleware"
 	"github.com/kholidss/xyz-skilltest/internal/repositories"
 	"github.com/kholidss/xyz-skilltest/internal/service/authentication"
+	"github.com/kholidss/xyz-skilltest/internal/service/transaction"
 	"github.com/kholidss/xyz-skilltest/pkg/config"
+	redislock "github.com/kholidss/xyz-skilltest/pkg/redis_lock"
 )
 
 type router struct {
@@ -46,19 +49,21 @@ func (rtr *router) response(fiberCtx *fiber.Ctx, resp appctx.Response) error {
 func (rtr *router) Route() {
 	//init db
 	db := bootstrap.RegistryMySQLDatabase(rtr.cfg)
+	redisClient := bootstrap.RegistryRedisNative(rtr.cfg)
+
+	//redislock
+	pkgRedisLock := redislock.NewLocker(redisClient)
 
 	//define repositories
 	repoUser := repositories.NewUserRepository(db)
 	repoBucket := repositories.NewBucketRepository(db)
 	repoLimit := repositories.NewLimitRepository(db)
+	repoMerchant := repositories.NewMerchantRepository(db)
+	repoTransaction := repositories.NewTransactionRepository(db)
+	repoTransactionCredit := repositories.NewTransactionCreditRepository(db)
 
 	//define middleware
-	//middlewareUserAuth := middleware.NewUserAuthMiddleware(rtr.cfg, repoUser)
-
-	//define storage
-	//fs := bootstrap.RegistryGCS(rtr.cfg.GCSConfig.ServiceAccountPath)
-	//fs := bootstrap.RegistryAWSSession(rtr.cfg)
-	//fs := bootstrap.RegistryMinio(rtr.cfg)
+	middlewareUserAuth := middleware.NewUserAuthMiddleware(rtr.cfg, repoUser)
 
 	//define cdn
 	cdnStorage := bootstrap.RegistryCDN(rtr.cfg)
@@ -71,21 +76,32 @@ func (rtr *router) Route() {
 		repoLimit,
 		cdnStorage,
 	)
+	svcTransaction := transaction.NewSvcTransaction(
+		rtr.cfg,
+		repoMerchant,
+		repoLimit,
+		repoTransaction,
+		repoTransactionCredit,
+		pkgRedisLock,
+	)
 
 	//define controller
 	ctrlRegisterUser := modulAuthentication.NewRegisterUser(svcAuthentication)
 	ctrlLoginUser := modulAuthentication.NewLoginUser(svcAuthentication)
+	ctrlTrxCreditUser := modultransaction.NewCreditUser(svcTransaction)
 
 	health := controller.NewGetHealth()
 	externalV1 := rtr.fiber.Group("/api/external/v1")
 
 	pathAuthV1 := externalV1.Group("/auth")
+	pathTransactionV1 := externalV1.Group("/transaction")
 
 	rtr.fiber.Get("/ping", rtr.handle(
 		handler.HttpRequest,
 		health,
 	))
 
+	//Path authentication
 	pathAuthV1.Post("/register-user", rtr.handle(
 		handler.HttpRequest,
 		ctrlRegisterUser,
@@ -93,8 +109,13 @@ func (rtr *router) Route() {
 	pathAuthV1.Post("/login-user", rtr.handle(
 		handler.HttpRequest,
 		ctrlLoginUser,
-		//middleware
-		// basicMiddleware.Authenticate,
+	))
+
+	//Path transaction
+	pathTransactionV1.Post("/credit-user", rtr.handle(
+		handler.HttpRequest,
+		ctrlTrxCreditUser,
+		middlewareUserAuth.Authenticate,
 	))
 
 }

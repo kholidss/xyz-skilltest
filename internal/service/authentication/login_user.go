@@ -81,7 +81,7 @@ func (a authenticationService) LoginUser(ctx context.Context, payload presentati
 	logger.InfoWithContext(ctx, "success login user", lf...)
 	return *appctx.NewResponse().
 		WithCode(http.StatusCreated).
-		WithMessage("Success register user").
+		WithMessage("Success login user").
 		WithData(presentation.RespLoginUser{
 			UserID:      user.ID,
 			AccessToken: token,

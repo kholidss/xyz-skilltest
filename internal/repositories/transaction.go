@@ -57,7 +57,6 @@ func (t transactionRepository) Store(ctx context.Context, payload any, opts ...O
 	}
 
 	query, val, err := helper.StructQueryInsertMysql(payload, TableNameTransactions, "db", false)
-
 	_, err = tx.ExecContext(
 		ctx,
 		query,

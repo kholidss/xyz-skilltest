@@ -14,12 +14,15 @@ type Config struct {
 	AppConfig      `mapstructure:",squash"`
 	LoggerConfig   `mapstructure:",squash"`
 	DatabaseConfig `mapstructure:",squash"`
+	RedisConfig    `mapstructure:",squash"`
 	MongoDBConfig  `mapstructure:",squash"`
 	BrokerConfig   `mapstructure:",squash"`
 	GCPConfig      `mapstructure:",squash"`
 	NoSleepConfig  `mapstructure:",squash"`
 	StorageConfig  `mapstructure:",squash"`
 	CDNConfig      `mapstructure:",squash"`
+	CreditConfig   `mapstructure:",squash"`
+	TTLConfig      `mapstructure:",squash"`
 }
 
 func LoadAllConfigs() (*Config, error) {

@@ -29,6 +29,7 @@ type BucketRepository interface {
 
 type LimitRepository interface {
 	Store(ctx context.Context, payload any, opts ...Option) error
+	Update(ctx context.Context, payload any, where any, opts ...Option) error
 	FindOne(ctx context.Context, param any, selectColumn []string) (*entity.Limit, error)
 	Finds(ctx context.Context, param any, selectColumns []string) ([]entity.Limit, error)
 	BeginTx(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error)
